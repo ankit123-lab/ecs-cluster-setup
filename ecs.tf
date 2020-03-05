@@ -28,6 +28,11 @@ resource "aws_ecs_cluster" "deepdive" {
   name = "deepdive"
 }
 
+resource "aws_ecs_task_definition" "task-def" {
+  family                = "service"
+  container_definitions = "${file("web-task-definition.json")}"
+}
+
 resource "aws_ecs_service" "web" {
   name            = "web"
   cluster         = data.aws_ecs_cluster.ecscluster.id
@@ -42,5 +47,5 @@ resource "aws_ecs_service" "web" {
     container_name   = "nginx"
     container_port   = 80
   }
-  
+  depends_on = [aws_ecs_task_definition.task-def]
 }
